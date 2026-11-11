@@ -99,4 +99,7 @@ def _injetar_tenant(consulta: exp.Select, qualificador: str) -> None:
     if not isinstance(where, exp.Where):
         consulta.set("where", exp.Where(this=predicado))
         return
-    where.set("this", exp.and_(where.this, predicado, wrap=False))
+    # O filtro existente fica entre parênteses para a precedência não
+    # depender de OR continuar fora da allowlist.
+    agrupado = exp.Paren(this=where.this.copy())
+    where.set("this", exp.and_(agrupado, predicado, wrap=False))

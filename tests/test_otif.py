@@ -43,6 +43,25 @@ def test_entrega_pontual_e_incompleta_nao_conta(motor) -> None:
     assert resultado.rejeicoes.violacoes == ()
 
 
+def test_vigente_nao_salva_entrega_depois_da_promessa_original(motor) -> None:
+    resultado = calcular(
+        motor,
+        [
+            embarque(
+                "E-reagendada",
+                data_prometida_original=date(2026, 1, 10),
+                data_prometida_vigente=date(2026, 1, 20),
+                data_coleta=date(2026, 1, 2),
+                data_entrega=date(2026, 1, 15),
+            )
+        ],
+    )
+    assert resultado.numerador == 0
+    assert resultado.denominador == 1
+    assert resultado.valor == Decimal(0)
+    assert resultado.rejeicoes.violacoes == ()
+
+
 def test_entrega_no_dia_prometido_conta(motor) -> None:
     resultado = calcular(
         motor,

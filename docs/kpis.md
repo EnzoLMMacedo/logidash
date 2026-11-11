@@ -7,8 +7,11 @@ data: 2026-08-21
 responsavel: Arquiteto
 tags: [logidash, kpi, logistica, otif, frete, estoque, dicionario]
 relacionados:
+  - "[[README]]"
+  - "[[pendencias]]"
   - "[[ADR-001-ingestao-e-normalizacao]]"
   - "[[ADR-002-stack-renderizacao]]"
+  - "[[ADR-007-otif-promessa-original]]"
 ---
 
 # Dicionário de KPIs Logísticos
@@ -16,6 +19,8 @@ relacionados:
 Este documento é a **fonte da verdade** dos indicadores do LogiDash. Cada entrada aqui tem correspondência direta com um arquivo em `src/logidash/metrics/definitions/`, e o motor compila essas definições em SQL parametrizado contra o *star schema* da camada Gold.
 
 Regra de governança: **nenhum KPI existe no código sem existir aqui primeiro.** Alterar uma fórmula exige incrementar a versão deste documento e registrar o motivo, porque mudança silenciosa de fórmula invalida comparações históricas.
+
+Inconsistências já identificadas neste dicionário (identificadores mistos, classe de agregação de `custo_por_kg` e de `cobertura_dias`, buracos de `ocupacao_veiculo` e `giro_estoque`) estão registradas em [[pendencias]] e **não foram resolvidas aqui**. Corrigi-las exige decisão do time e incremento de versão.
 
 ---
 
@@ -620,3 +625,4 @@ WHERE s.data_prometida_original BETWEEN :inicio AND :fim
 | Versão | Data | Alteração |
 | --- | --- | --- |
 | 1.0.0 | 2026-08-21 | Versão inicial com 20 KPIs nos domínios de entrega, frete e estoque |
+| — | 2026-11-11 | Referência a [[pendencias]] acrescentada no cabeçalho, sem alteração de fórmula, classe ou campo |

@@ -15,6 +15,16 @@ def _compilada(agregar_por: str | None = None):
     return compilar(carregar_definicao("otif").sql, agregar_por=agregar_por)
 
 
+def test_filtro_de_tenant_agrupa_o_where_existente() -> None:
+    arvore = sqlglot.parse_one(_compilada().sql, read="duckdb")
+    conjuncao = arvore.args["where"].this
+    assert isinstance(conjuncao, exp.And)
+    assert isinstance(conjuncao.this, exp.Paren)
+    assert "data_prometida_original" in conjuncao.this.sql(dialect="duckdb")
+    assert "tenant_id" not in conjuncao.this.sql(dialect="duckdb")
+    assert isinstance(conjuncao.expression, exp.EQ)
+
+
 def test_where_filtra_prazo_prometido_e_nao_a_entrega() -> None:
     arvore = sqlglot.parse_one(_compilada().sql, read="duckdb")
     where = arvore.args["where"].sql(dialect="duckdb")

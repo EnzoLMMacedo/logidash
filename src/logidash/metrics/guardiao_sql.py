@@ -44,6 +44,7 @@ _TIPOS_PERMITIDOS = frozenset(
         exp.If,
         exp.And,
         exp.Not,
+        exp.Paren,
         exp.LTE,
         exp.GTE,
         exp.EQ,
