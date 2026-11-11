@@ -59,14 +59,8 @@ Os arquivos abaixo existem como placeholders de índice. Título e status vêm d
 
 O [[ADR-005-docs-as-code-e-sincronia-obsidian]], quando escrito, deve descrever `scripts/sync_obsidian.py`. Até lá, notas do LogiDash são gravadas só nesta pasta.
 
-## Cópia no repositório já divergente
+## Cópia no repositório
 
-O [PR #1](https://github.com/EnzoLMMacedo/logidash/pull/1) adicionou uma cópia em `docs/` no repositório (`docs/README.md`, `docs/kpis.md`, `docs/adr/` com ADR-001 e ADR-002). Esse conteúdo corresponde ao estado do vault **antes** da reorganização de 2026-11-11.
+O [PR #1](https://github.com/EnzoLMMacedo/logidash/pull/1) passou a incluir em `docs/` uma cópia desta pasta (README, kpis, pendencias e ADRs 001 a 007). Depois do commit de alinhamento, essa cópia conferia com o vault.
 
-Em relação a esta pasta, essa cópia:
-
-- não inclui `pendencias.md` nem os placeholders dos ADRs 003 a 007;
-- não traz as referências a pendências acrescentadas em `kpis.md`;
-- no `docs/README.md`, ainda descreve `scripts/sync_obsidian.py` como se a sincronia já existisse, embora o ADR-005 continue planejado.
-
-A fonte da verdade permanece esta pasta. Enquanto o [[ADR-005-docs-as-code-e-sincronia-obsidian]] não for escrito, não há fluxo de sincronia: as duas cópias precisam ser tratadas como um risco de divergência, não como duas fontes equivalentes.
+A fonte da verdade permanece esta pasta. Enquanto o [[ADR-005-docs-as-code-e-sincronia-obsidian]] não for escrito, não há sincronia automática: as duas cópias podem voltar a divergir e não devem ser tratadas como duas fontes equivalentes.
