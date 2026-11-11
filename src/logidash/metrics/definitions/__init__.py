@@ -1,0 +1,1 @@
+"""Definições versionadas dos KPIs."""

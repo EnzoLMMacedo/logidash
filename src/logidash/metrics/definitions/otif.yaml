@@ -1,0 +1,25 @@
+id: otif
+nome: OTIF
+unidade: fracao
+direcao: maior_melhor
+meta_padrao: "0.95"
+grao: embarque
+agregacao: razao_de_somas
+tabela: fact_shipment
+campos_exigidos:
+  - data_prometida_original
+  - data_entrega
+  - qtd_pedida
+  - qtd_entregue
+sql: |
+  SELECT
+      SUM(
+          CASE
+              WHEN s.data_entrega IS NOT NULL
+               AND s.data_entrega <= s.data_prometida_original
+               AND s.qtd_entregue >= s.qtd_pedida
+              THEN 1 ELSE 0
+          END
+      )::DECIMAL / NULLIF(COUNT(*), 0) AS otif
+  FROM fact_shipment s
+  WHERE s.data_prometida_original BETWEEN :inicio AND :fim
