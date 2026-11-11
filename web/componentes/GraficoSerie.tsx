@@ -8,6 +8,8 @@ type Propriedades = {
   series: SeriePainel[];
 };
 
+const CORES = ["#0e4d5c", "#c47b4a"];
+
 export function GraficoSerie({ series }: Propriedades) {
   const caixa = useRef<HTMLDivElement>(null);
   const resumo = series.map((serie) => `${serie.nome}: ${serie.valor}`).join(". ");
@@ -18,15 +20,25 @@ export function GraficoSerie({ series }: Propriedades) {
     }
     const grafico = echarts.init(caixa.current);
     grafico.setOption({
+      color: CORES,
       aria: { enabled: true },
-      grid: { left: 24, right: 16, top: 16, bottom: 32, containLabel: true },
-      xAxis: { type: "value", minInterval: 1 },
-      yAxis: { type: "category", data: series.map((serie) => serie.nome) },
+      tooltip: { trigger: "item" },
+      legend: {
+        bottom: 0,
+        icon: "circle",
+        itemWidth: 10,
+        itemHeight: 10,
+        textStyle: { color: "#14232c", fontSize: 13 },
+      },
       series: [
         {
-          type: "bar",
-          data: series.map((serie) => serie.valor),
-          itemStyle: { color: "#1d4e89" },
+          type: "pie",
+          radius: ["58%", "78%"],
+          center: ["50%", "44%"],
+          avoidLabelOverlap: true,
+          label: { show: false },
+          itemStyle: { borderColor: "#ffffff", borderWidth: 3 },
+          data: series.map((serie) => ({ name: serie.nome, value: serie.valor })),
         },
       ],
     });

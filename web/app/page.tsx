@@ -18,63 +18,106 @@ export default async function Pagina({ searchParams }: Propriedades) {
 
   return (
     <main>
-      <h1>Painel de entregas</h1>
-      <p>
-        Período de {formatarData(PERIODO.inicio)} a {formatarData(PERIODO.fim)}. O tenant vem
-        do token, não de um campo da tela.
-      </p>
-      <form method="get">
-        <label>
-          Token
-          <input id="token" name="token" defaultValue={token} autoComplete="off" />
-        </label>
-        <button type="submit">Atualizar</button>
-      </form>
+      <header className="topo">
+        <div>
+          <p className="marca">LogiDash</p>
+          <h1>Painel de entregas</h1>
+        </div>
+        <p className="periodo">
+          {formatarData(PERIODO.inicio)} a {formatarData(PERIODO.fim)}
+        </p>
+      </header>
+      <section className="sessao" aria-label="Acesso">
+        <div>
+          <p className="kicker">Acesso</p>
+          <p>O tenant vem do token, não de um campo da tela.</p>
+        </div>
+        <form method="get">
+          <div>
+            <label className="rotulo-campo" htmlFor="token">
+              Token
+            </label>
+            <input id="token" name="token" defaultValue={token} autoComplete="off" />
+          </div>
+          <button type="submit">Atualizar</button>
+        </form>
+      </section>
       {consulta.ok ? <Painel painel={consulta.painel} /> : <p className="erro">{consulta.mensagem}</p>}
     </main>
   );
 }
 
 function Painel({ painel }: { painel: PainelOtif }) {
+  const linhas = painel.rejeicoes.length;
   return (
     <>
-      <section className="cartao" aria-labelledby="titulo-indicador">
-        <h2 id="titulo-indicador">{painel.rotulo}</h2>
-        <p className="valor">{formatarFracao(painel.valor)}</p>
-        {painel.valor !== null ? <p className="meta">Fração {painel.valor.replace(".", ",")}</p> : null}
-        {painel.denominador > 0 ? (
-          <p className="contagem">
-            {painel.numerador} de {painel.denominador} embarques no denominador
-          </p>
-        ) : null}
-        {painel.series.length > 0 ? <GraficoSerie series={painel.series} /> : null}
+      <section className="grade-kpis" aria-label="Indicadores">
+        <article className="cartao cartao-principal">
+          <p className="kicker">Indicador</p>
+          <h2 id="titulo-indicador">{painel.rotulo}</h2>
+          <p className="valor">{formatarFracao(painel.valor)}</p>
+          {painel.valor !== null ? (
+            <p className="apoio">Fração {painel.valor.replace(".", ",")}</p>
+          ) : null}
+          {painel.denominador > 0 ? (
+            <p className="apoio">{textoContagem(painel.numerador, painel.denominador)}</p>
+          ) : null}
+        </article>
+        <article className="cartao">
+          <p className="kicker">Contagem</p>
+          <h2>Numerador</h2>
+          <p className="numero">{painel.numerador}</p>
+        </article>
+        <article className="cartao">
+          <p className="kicker">Contagem</p>
+          <h2>Denominador</h2>
+          <p className="numero">{painel.denominador}</p>
+        </article>
       </section>
-      <section className="rejeicoes" aria-labelledby="titulo-quarentena">
-        <h2 id="titulo-quarentena">Quarentena</h2>
-        <p>Linhas que não entram na métrica.</p>
-        {painel.rejeicoes.length === 0 ? (
-          <p>Nenhuma linha ficou de fora da métrica.</p>
-        ) : (
-          <table>
-            <caption>Embarques rejeitados pelo contrato</caption>
-            <thead>
-              <tr>
-                <th scope="col">Embarque</th>
-                <th scope="col">Linha</th>
-                <th scope="col">Motivo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {painel.rejeicoes.map((item) => (
-                <tr key={`${item.indice_linha}-${item.regra}`}>
-                  <td>{item.shipment_id ?? "Sem identificador"}</td>
-                  <td>{item.indice_linha}</td>
-                  <td>{item.mensagem}</td>
+      <section className="grade-detalhe">
+        <article className="cartao" aria-labelledby="titulo-composicao">
+          <p className="kicker">Composição</p>
+          <h2 id="titulo-composicao">Denominador</h2>
+          <p className="apoio">Numerador e o restante do denominador.</p>
+          {painel.series.length > 0 ? (
+            <GraficoSerie series={painel.series} />
+          ) : (
+            <p className="vazio">Sem embarques no período para compor o gráfico.</p>
+          )}
+        </article>
+        <article className="cartao rejeicoes" aria-labelledby="titulo-quarentena">
+          <div className="cabecalho-secao">
+            <div>
+              <p className="kicker">Fora da métrica</p>
+              <h2 id="titulo-quarentena">Quarentena</h2>
+            </div>
+            <p className="selo">{textoLinhas(linhas)}</p>
+          </div>
+          <p className="apoio">Linhas que não entram na métrica.</p>
+          {linhas === 0 ? (
+            <p className="vazio">Nenhuma linha ficou de fora da métrica.</p>
+          ) : (
+            <table>
+              <caption>Embarques rejeitados pelo contrato</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Embarque</th>
+                  <th scope="col">Linha</th>
+                  <th scope="col">Motivo</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {painel.rejeicoes.map((item) => (
+                  <tr key={`${item.indice_linha}-${item.regra}`}>
+                    <td>{item.shipment_id ?? "Sem identificador"}</td>
+                    <td>{item.indice_linha}</td>
+                    <td>{item.mensagem}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </article>
       </section>
     </>
   );
@@ -123,4 +166,13 @@ function formatarFracao(valor: string | null): string {
 function formatarData(iso: string): string {
   const [ano, mes, dia] = iso.split("-");
   return `${dia}/${mes}/${ano}`;
+}
+
+function textoContagem(numerador: number, denominador: number): string {
+  const embarque = denominador === 1 ? "embarque" : "embarques";
+  return `${numerador} de ${denominador} ${embarque} no denominador`;
+}
+
+function textoLinhas(quantidade: number): string {
+  return quantidade === 1 ? "1 linha" : `${quantidade} linhas`;
 }
