@@ -1,0 +1,11 @@
+node_modules/
+.next/
+dist/
+build/
+__pycache__/
+.pytest_cache/
+*.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.parquet
