@@ -25,8 +25,7 @@ export function CartaoKpi({ widget }: { widget: WidgetDashboard }) {
 
   return (
     <article className="cartao">
-      <p className="kicker">Indicador</p>
-      <h2>{widget.rotulo}</h2>
+      <h2 className="rotulo">{widget.rotulo}</h2>
       <p className={situacao === "neutro" ? "valor" : `valor valor-${situacao}`}>{percentual}</p>
       {textoSituacao ? <p className={`status-meta status-${situacao}`}>{textoSituacao}</p> : null}
       {widget.meta ? <p className="apoio">Meta {formatarMedida(widget.meta, widget.formatacao)}</p> : null}
