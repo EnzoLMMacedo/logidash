@@ -8,11 +8,11 @@
   --cor-texto-discreto: #737373;
   --cor-destaque: #0070f3;
   --cor-critico: #ee0000;
-  --fonte-32: 32px;
-  --fonte-24: 24px;
-  --fonte-16: 16px;
-  --fonte-14: 14px;
-  --fonte-12: 12px;
+  --fonte-32: 2rem;
+  --fonte-24: 1.5rem;
+  --fonte-16: 1rem;
+  --fonte-14: 0.875rem;
+  --fonte-12: 0.75rem;
   --espaco-1: 4px;
   --espaco-2: 8px;
   --espaco-3: 12px;
@@ -300,17 +300,52 @@ th {
 .erro {
   margin-top: var(--espaco-4);
   padding: var(--espaco-4);
-  border: 1px solid var(--cor-critico);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-cartao);
   background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+.erro-titulo {
   color: var(--cor-critico);
   font-weight: 600;
+}
+
+p.erro-titulo {
+  margin: 0;
+}
+
+.esqueleto {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.esqueleto span {
+  display: block;
+  height: var(--espaco-4);
+  border-radius: var(--raio-campo);
+  background: var(--cor-borda);
+}
+
+.esqueleto span:nth-child(1) {
+  width: 32%;
+  height: var(--espaco-3);
+}
+
+.esqueleto span:nth-child(2) {
+  width: 48%;
+  height: var(--espaco-8);
+}
+
+.esqueleto span:nth-child(3) {
+  width: 70%;
 }
 
 @media (max-width: 860px) {
   .topo,
   .sessao,
-  .grade-widgets {
+  .grade-widgets,
+  form {
     display: grid;
     grid-template-columns: 1fr;
   }
@@ -319,7 +354,22 @@ th {
     white-space: normal;
   }
 
-  .valor {
-    font-size: var(--fonte-24);
+  input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  form button {
+    justify-self: start;
+  }
+
+  .rejeicoes {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .contagens strong {
+    font-size: var(--fonte-16);
   }
 }

@@ -22,7 +22,7 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
     .join("\n")}`;
   const resumo =
     linhas.length === 0
-      ? "Nenhuma série neste período."
+      ? "Sem séries no período."
       : linhas.map((linha) => `${linha.rotulo}: ${linha.texto}`).join(". ");
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
       <p className="kicker">Série</p>
       <h2>{widget.rotulo}</h2>
       {linhas.length === 0 ? (
-        <p className="vazio">Nenhuma série neste período.</p>
+        <p className="vazio">Sem séries no período.</p>
       ) : (
         <div ref={caixa} className="grafico" role="img" aria-label={resumo} />
       )}
