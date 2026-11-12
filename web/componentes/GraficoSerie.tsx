@@ -18,11 +18,15 @@ const CORES = ["#0e4d5c", "#c47b4a"];
 
 export function GraficoSerie({ fatias, percentual }: Propriedades) {
   const caixa = useRef<HTMLDivElement>(null);
-  const assinatura = fatias.map((fatia) => `${fatia.nome}\u0000${fatia.rotulo}\u0000${fatia.valor}`).join("\n");
+  const dados = useRef({ fatias, percentual });
+  dados.current = { fatias, percentual };
+  const assinatura = `${percentual}\n${fatias.map((fatia) => `${fatia.nome}\u0000${fatia.rotulo}\u0000${fatia.valor}`).join("\n")}`;
   const resumo = `${percentual}. ${fatias.map((fatia) => `${fatia.rotulo}: ${fatia.valor}`).join(". ")}.`;
 
   useEffect(() => {
-    if (!caixa.current || fatias.length === 0) {
+    const atuais = dados.current.fatias;
+    const texto = dados.current.percentual;
+    if (!caixa.current || atuais.length === 0) {
       return;
     }
     const grafico = echarts.init(caixa.current);
@@ -45,7 +49,7 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
         left: "center",
         top: "36%",
         style: {
-          text: percentual,
+          text: texto,
           align: "center",
           fill: "#14232c",
           fontSize: 28,
@@ -60,7 +64,7 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
           avoidLabelOverlap: true,
           label: { show: false },
           itemStyle: { borderColor: "#ffffff", borderWidth: 3 },
-          data: fatias.map((fatia) => ({ name: fatia.rotulo, value: fatia.valor })),
+          data: atuais.map((fatia) => ({ name: fatia.rotulo, value: fatia.valor })),
         },
       ],
     });
@@ -70,7 +74,7 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
       window.removeEventListener("resize", aoRedimensionar);
       grafico.dispose();
     };
-  }, [assinatura, fatias, percentual]);
+  }, [assinatura]);
 
   return <div ref={caixa} className="grafico" role="img" aria-label={resumo} />;
 }
