@@ -41,7 +41,7 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
         icon: "circle",
         itemWidth: 10,
         itemHeight: 10,
-        textStyle: { color: tema.apoio, fontFamily: tema.fonte, fontSize: 13 },
+        textStyle: { fontSize: 13 },
       },
       graphic: {
         type: "text",
@@ -63,7 +63,6 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
           center: ["50%", "44%"],
           avoidLabelOverlap: true,
           label: { show: false },
-          itemStyle: { borderColor: tema.superficie, borderWidth: 3 },
           data: atuais.map((fatia) => ({
             name: fatia.rotulo,
             value: fatia.valor,

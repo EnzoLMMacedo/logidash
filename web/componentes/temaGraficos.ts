@@ -6,10 +6,7 @@ export type TemaGraficos = {
   fonte: string;
   destaque: string;
   neutro: string;
-  borda: string;
-  superficie: string;
   texto: string;
-  apoio: string;
 };
 
 function token(estilo: CSSStyleDeclaration, nome: string): string {
@@ -18,47 +15,45 @@ function token(estilo: CSSStyleDeclaration, nome: string): string {
 
 export function prepararTemaGraficos(): TemaGraficos {
   const raiz = getComputedStyle(document.documentElement);
-  const tema: TemaGraficos = {
-    fonte: getComputedStyle(document.body).fontFamily,
-    destaque: token(raiz, "--cor-destaque"),
-    neutro: token(raiz, "--cor-texto-discreto"),
-    borda: token(raiz, "--cor-borda"),
-    superficie: token(raiz, "--cor-superficie"),
-    texto: token(raiz, "--cor-texto"),
-    apoio: token(raiz, "--cor-texto-apoio"),
-  };
+  const fonte = getComputedStyle(document.body).fontFamily;
+  const destaque = token(raiz, "--cor-destaque");
+  const neutro = token(raiz, "--cor-texto-discreto");
+  const borda = token(raiz, "--cor-borda");
+  const superficie = token(raiz, "--cor-superficie");
+  const texto = token(raiz, "--cor-texto");
+  const apoio = token(raiz, "--cor-texto-apoio");
   const eixo = {
-    axisLine: { lineStyle: { color: tema.borda } },
-    axisTick: { lineStyle: { color: tema.borda } },
-    axisLabel: { color: tema.apoio, fontFamily: tema.fonte },
-    splitLine: { lineStyle: { color: tema.borda } },
+    axisLine: { lineStyle: { color: borda } },
+    axisTick: { lineStyle: { color: borda } },
+    axisLabel: { color: apoio, fontFamily: fonte },
+    splitLine: { lineStyle: { color: borda } },
   };
 
   echarts.registerTheme(NOME_TEMA_GRAFICOS, {
-    color: [tema.destaque, tema.neutro],
+    color: [destaque, neutro],
     backgroundColor: "transparent",
-    textStyle: { fontFamily: tema.fonte, color: tema.apoio },
-    legend: { textStyle: { fontFamily: tema.fonte, color: tema.apoio } },
+    textStyle: { fontFamily: fonte, color: apoio },
+    legend: { textStyle: { fontFamily: fonte, color: apoio } },
     tooltip: {
-      backgroundColor: tema.superficie,
-      borderColor: tema.borda,
+      backgroundColor: superficie,
+      borderColor: borda,
       borderWidth: 1,
-      textStyle: { fontFamily: tema.fonte, color: tema.texto },
-      axisPointer: { lineStyle: { color: tema.borda } },
+      textStyle: { fontFamily: fonte, color: texto },
+      axisPointer: { lineStyle: { color: borda } },
     },
     categoryAxis: eixo,
     valueAxis: eixo,
     bar: {
-      itemStyle: { color: tema.destaque },
-      label: { color: tema.apoio, fontFamily: tema.fonte },
+      itemStyle: { color: destaque },
+      label: { color: apoio, fontFamily: fonte },
     },
     pie: {
-      itemStyle: { borderColor: tema.superficie, borderWidth: 3 },
-      label: { color: tema.apoio, fontFamily: tema.fonte },
+      itemStyle: { borderColor: superficie, borderWidth: 3 },
+      label: { color: apoio, fontFamily: fonte },
     },
   });
 
-  return tema;
+  return { fonte, destaque, neutro, texto };
 }
 
 export function corDaFatia(nome: string, tema: TemaGraficos): string {

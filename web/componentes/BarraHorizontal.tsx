@@ -33,7 +33,7 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
     }
     const textos = atuais.map((linha) => linha.texto);
     const maior = atuais.reduce((atual, linha) => Math.max(atual, linha.numero ?? 0), 0);
-    const tema = prepararTemaGraficos();
+    prepararTemaGraficos();
     const grafico = echarts.init(caixa.current, NOME_TEMA_GRAFICOS);
     grafico.setOption({
       aria: { enabled: true },
@@ -52,12 +52,7 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
         type: "value",
         min: 0,
         max: formatacao === "fracao" ? Math.max(1, maior) : undefined,
-        axisLine: { lineStyle: { color: tema.borda } },
-        axisTick: { lineStyle: { color: tema.borda } },
-        splitLine: { lineStyle: { color: tema.borda } },
         axisLabel: {
-          color: tema.apoio,
-          fontFamily: tema.fonte,
           formatter: (valor: number) =>
             formatacao === "fracao" ? formatarMedida(String(valor), formatacao) : String(valor),
         },
@@ -66,21 +61,16 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
         type: "category",
         inverse: true,
         data: atuais.map((linha) => linha.rotulo),
-        axisLine: { lineStyle: { color: tema.borda } },
-        axisTick: { lineStyle: { color: tema.borda } },
-        axisLabel: { color: tema.apoio, fontFamily: tema.fonte, width: 140, overflow: "truncate" },
+        axisLabel: { width: 140, overflow: "truncate" },
       },
       series: [
         {
           type: "bar",
           data: atuais.map((linha) => linha.numero),
           barMaxWidth: 22,
-          itemStyle: { color: tema.destaque },
           label: {
             show: true,
             position: "right",
-            color: tema.apoio,
-            fontFamily: tema.fonte,
             formatter: (params: { dataIndex?: number }) => textos[params.dataIndex ?? 0] ?? "",
           },
         },
