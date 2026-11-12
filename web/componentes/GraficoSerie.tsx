@@ -3,26 +3,32 @@
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
+export type FatiaGrafico = {
+  nome: string;
+  rotulo: string;
+  valor: number;
+};
+
 type Propriedades = {
-  noPrazo: number;
-  fora: number;
+  fatias: FatiaGrafico[];
   percentual: string;
 };
 
 const CORES = ["#0e4d5c", "#c47b4a"];
 
-export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
+export function GraficoSerie({ fatias, percentual }: Propriedades) {
   const caixa = useRef<HTMLDivElement>(null);
-  const resumo = `${percentual}. No prazo e completo: ${noPrazo}. Fora: ${fora}.`;
+  const dados = useRef({ fatias, percentual });
+  dados.current = { fatias, percentual };
+  const assinatura = `${percentual}\n${fatias.map((fatia) => `${fatia.nome}\u0000${fatia.rotulo}\u0000${fatia.valor}`).join("\n")}`;
+  const resumo = `${percentual}. ${fatias.map((fatia) => `${fatia.rotulo}: ${fatia.valor}`).join(". ")}.`;
 
   useEffect(() => {
-    if (!caixa.current || noPrazo + fora <= 0) {
+    const atuais = dados.current.fatias;
+    const texto = dados.current.percentual;
+    if (!caixa.current || atuais.length === 0) {
       return;
     }
-    const fatias = [
-      { name: "No prazo e completo", value: noPrazo },
-      { name: "Fora", value: fora },
-    ];
     const grafico = echarts.init(caixa.current);
     grafico.setOption({
       color: CORES,
@@ -43,7 +49,7 @@ export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
         left: "center",
         top: "36%",
         style: {
-          text: percentual,
+          text: texto,
           align: "center",
           fill: "#14232c",
           fontSize: 28,
@@ -58,7 +64,7 @@ export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
           avoidLabelOverlap: true,
           label: { show: false },
           itemStyle: { borderColor: "#ffffff", borderWidth: 3 },
-          data: fatias,
+          data: atuais.map((fatia) => ({ name: fatia.rotulo, value: fatia.valor })),
         },
       ],
     });
@@ -68,7 +74,7 @@ export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
       window.removeEventListener("resize", aoRedimensionar);
       grafico.dispose();
     };
-  }, [noPrazo, fora, percentual]);
+  }, [assinatura]);
 
   return <div ref={caixa} className="grafico" role="img" aria-label={resumo} />;
 }

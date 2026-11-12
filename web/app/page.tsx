@@ -1,31 +1,39 @@
-import { GraficoSerie } from "@/componentes/GraficoSerie";
-import type { PainelOtif } from "@/tipos/painel";
+import { WidgetRegistry } from "@/componentes/WidgetRegistry";
+import { formatarData } from "@/formatacao";
+import type { DashboardResult, DashboardSpec, RejeicaoDashboard } from "@/tipos/painel";
 
 export const dynamic = "force-dynamic";
 
 const API = process.env.API_INTERNA_URL ?? "http://127.0.0.1:8000";
-const PERIODO = { inicio: "2026-01-01", fim: "2026-01-31" };
 
 type Propriedades = {
   searchParams: Promise<{ token?: string }>;
 };
+
+type Consulta =
+  | { ok: true; spec: DashboardSpec; resultado: DashboardResult }
+  | { ok: false; mensagem: string };
 
 export default async function Pagina({ searchParams }: Propriedades) {
   const parametros = await searchParams;
   const tokenInformado = parametros.token?.trim() ?? "";
   const token = tokenInformado === "" ? "token-a" : tokenInformado;
   const consulta = await consultarPainel(token);
+  const titulo = consulta.ok ? consulta.spec.titulo : "Painel de entregas";
+  const intervalo = consulta.ok ? periodoDoSpec(consulta.spec) : null;
 
   return (
     <main>
       <header className="topo">
         <div>
           <p className="marca">LogiDash</p>
-          <h1>Painel de entregas</h1>
+          <h1>{titulo}</h1>
         </div>
-        <p className="periodo">
-          {formatarData(PERIODO.inicio)} a {formatarData(PERIODO.fim)}
-        </p>
+        {intervalo ? (
+          <p className="periodo">
+            {formatarData(intervalo.inicio)} a {formatarData(intervalo.fim)}
+          </p>
+        ) : null}
       </header>
       <section className="sessao" aria-label="Acesso">
         <div>
@@ -42,109 +50,106 @@ export default async function Pagina({ searchParams }: Propriedades) {
           <button type="submit">Atualizar</button>
         </form>
       </section>
-      {consulta.ok ? <Painel painel={consulta.painel} /> : <p className="erro">{consulta.mensagem}</p>}
+      {consulta.ok ? (
+        <Painel spec={consulta.spec} resultado={consulta.resultado} />
+      ) : (
+        <p className="erro">{consulta.mensagem}</p>
+      )}
     </main>
   );
 }
 
-function Painel({ painel }: { painel: PainelOtif }) {
-  const linhas = painel.rejeicoes.length;
+function Painel({ spec, resultado }: { spec: DashboardSpec; resultado: DashboardResult }) {
   return (
     <>
-      <section className="grade-kpis" aria-label="Indicadores">
-        <article className="cartao cartao-principal">
-          <p className="kicker">Indicador</p>
-          <h2 id="titulo-indicador">{painel.rotulo}</h2>
-          <p className="valor">{formatarFracao(painel.valor)}</p>
-          {painel.valor !== null ? (
-            <p className="apoio">Fração {painel.valor.replace(".", ",")}</p>
-          ) : null}
-          {painel.denominador > 0 ? (
-            <p className="apoio">{textoContagem(painel.numerador, painel.denominador)}</p>
-          ) : null}
-        </article>
-        <article className="cartao">
-          <p className="kicker">Contagem</p>
-          <h2>Numerador</h2>
-          <p className="numero">{painel.numerador}</p>
-        </article>
-        <article className="cartao">
-          <p className="kicker">Contagem</p>
-          <h2>Denominador</h2>
-          <p className="numero">{painel.denominador}</p>
-        </article>
+      <section className="grade-widgets" aria-label="Indicadores">
+        {spec.layout.map((item, indice) => {
+          const widget = resultado.widgets[indice];
+          const Componente = WidgetRegistry[item.tipo];
+          if (!widget || widget.tipo !== item.tipo || !Componente) {
+            return (
+              <article className="cartao" key={`${item.tipo}-${indice}`}>
+                <p className="vazio">Este widget ainda não está disponível.</p>
+              </article>
+            );
+          }
+          return <Componente key={`${item.tipo}-${indice}`} widget={widget} />;
+        })}
       </section>
-      <section className="grade-detalhe">
-        <article className="cartao" aria-labelledby="titulo-composicao">
-          <p className="kicker">Composição</p>
-          <h2 id="titulo-composicao">Denominador</h2>
-          <p className="apoio">No prazo e completo, e o que ficou fora.</p>
-          {painel.denominador > 0 ? (
-            <GraficoSerie
-              noPrazo={painel.numerador}
-              fora={painel.denominador - painel.numerador}
-              percentual={formatarFracao(painel.valor)}
-            />
-          ) : (
-            <p className="vazio">Sem embarques no período para compor o gráfico.</p>
-          )}
-        </article>
-        <article className="cartao rejeicoes" aria-labelledby="titulo-quarentena">
-          <div className="cabecalho-secao">
-            <div>
-              <p className="kicker">Fora da métrica</p>
-              <h2 id="titulo-quarentena">Quarentena</h2>
-            </div>
-            <p className="selo">{textoLinhas(linhas)}</p>
-          </div>
-          <p className="apoio">Linhas que não entram na métrica.</p>
-          {linhas === 0 ? (
-            <p className="vazio">Nenhuma linha ficou de fora da métrica.</p>
-          ) : (
-            <table>
-              <caption>Embarques rejeitados pelo contrato</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Embarque</th>
-                  <th scope="col">Linha</th>
-                  <th scope="col">Motivo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {painel.rejeicoes.map((item) => (
-                  <tr key={`${item.indice_linha}-${item.regra}`}>
-                    <td>{item.shipment_id ?? "Sem identificador"}</td>
-                    <td>{item.indice_linha}</td>
-                    <td>{item.mensagem}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </article>
-      </section>
+      <Quarentena rejeicoes={resultado.rejeicoes} />
     </>
   );
 }
 
-async function consultarPainel(
-  token: string,
-): Promise<{ ok: true; painel: PainelOtif } | { ok: false; mensagem: string }> {
+function Quarentena({ rejeicoes }: { rejeicoes: RejeicaoDashboard[] }) {
+  const linhas = rejeicoes.length;
+  return (
+    <section className="bloco-quarentena">
+      <article className="cartao rejeicoes" aria-labelledby="titulo-quarentena">
+        <div className="cabecalho-secao">
+          <div>
+            <p className="kicker">Fora da métrica</p>
+            <h2 id="titulo-quarentena">Quarentena</h2>
+          </div>
+          <p className="selo">{textoLinhas(linhas)}</p>
+        </div>
+        <p className="apoio">Linhas que não entram na métrica.</p>
+        {linhas === 0 ? (
+          <p className="vazio">Nenhuma linha ficou de fora da métrica.</p>
+        ) : (
+          <table>
+            <caption>Embarques rejeitados pelo contrato</caption>
+            <thead>
+              <tr>
+                <th scope="col">Embarque</th>
+                <th scope="col">Linha</th>
+                <th scope="col">Motivo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rejeicoes.map((item) => (
+                <tr key={`${item.indice_linha}-${item.regra}`}>
+                  <td>{item.shipment_id ?? "Sem identificador"}</td>
+                  <td>{item.indice_linha}</td>
+                  <td>{item.mensagem}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </article>
+    </section>
+  );
+}
+
+async function consultarPainel(token: string): Promise<Consulta> {
   try {
-    const resposta = await fetch(`${API}/api/painel/otif`, {
+    const specResposta = await fetch(`${API}/api/paineis/spec`, { cache: "no-store" });
+    if (!specResposta.ok) {
+      return { ok: false, mensagem: "Falha ao consultar o painel." };
+    }
+    const specBruto: unknown = await specResposta.json();
+    if (!ehSpec(specBruto)) {
+      return { ok: false, mensagem: "Falha ao consultar o painel." };
+    }
+    const resultadoResposta = await fetch(`${API}/api/paineis/resultado`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ kpi: "otif", parametros: PERIODO }),
+      body: JSON.stringify(specBruto),
       cache: "no-store",
     });
-    if (!resposta.ok) {
-      const corpo = (await resposta.json().catch(() => null)) as { detail?: string } | null;
+    if (!resultadoResposta.ok) {
+      const corpo = (await resultadoResposta.json().catch(() => null)) as { detail?: string } | null;
       return { ok: false, mensagem: corpo?.detail ?? "Falha ao consultar o painel." };
     }
-    return { ok: true, painel: (await resposta.json()) as PainelOtif };
+    const resultadoBruto: unknown = await resultadoResposta.json();
+    if (!ehResultado(resultadoBruto)) {
+      return { ok: false, mensagem: "Falha ao consultar o painel." };
+    }
+    return { ok: true, spec: specBruto, resultado: resultadoBruto };
   } catch {
     return {
       ok: false,
@@ -153,28 +158,30 @@ async function consultarPainel(
   }
 }
 
-function formatarFracao(valor: string | null): string {
-  if (valor === null) {
-    return "Sem embarques no período";
+function periodoDoSpec(spec: DashboardSpec): { inicio: string; fim: string } | null {
+  const filtro = spec.filtros.find(
+    (item) => item.campo === "data_prometida_original" && item.operador === "entre" && item.valor.length === 2,
+  );
+  if (!filtro) {
+    return null;
   }
-  const numero = Number(valor);
-  if (!Number.isFinite(numero)) {
-    return valor;
-  }
-  return new Intl.NumberFormat("pt-BR", {
-    style: "percent",
-    maximumFractionDigits: 1,
-  }).format(numero);
+  return { inicio: filtro.valor[0], fim: filtro.valor[1] };
 }
 
-function formatarData(iso: string): string {
-  const [ano, mes, dia] = iso.split("-");
-  return `${dia}/${mes}/${ano}`;
+function ehSpec(valor: unknown): valor is DashboardSpec {
+  if (!valor || typeof valor !== "object") {
+    return false;
+  }
+  const spec = valor as DashboardSpec;
+  return typeof spec.titulo === "string" && Array.isArray(spec.layout) && Array.isArray(spec.filtros);
 }
 
-function textoContagem(numerador: number, denominador: number): string {
-  const embarque = denominador === 1 ? "embarque" : "embarques";
-  return `${numerador} de ${denominador} ${embarque} no denominador`;
+function ehResultado(valor: unknown): valor is DashboardResult {
+  if (!valor || typeof valor !== "object") {
+    return false;
+  }
+  const resultado = valor as DashboardResult;
+  return Array.isArray(resultado.widgets) && Array.isArray(resultado.rejeicoes);
 }
 
 function textoLinhas(quantidade: number): string {
