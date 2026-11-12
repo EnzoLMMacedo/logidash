@@ -9,7 +9,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+from json import JSONDecodeError
+
 from logidash.api.fixtures_painel import EMBARQUES, TOKENS_DEMONSTRACAO
+from logidash.api.gerador import DashboardResult, DashboardSpec, resolver_spec, spec_painel_otif
 from logidash.metrics.contexto_tenant import ResolvedorDeTokenEmMemoria
 from logidash.metrics.erros import (
     ConsultaInvalida,
@@ -67,6 +70,19 @@ def criar_aplicacao() -> FastAPI:
         consulta = _preparar_consulta(corpo)
         resultado = motor.executar(token=token, consulta=consulta, embarques=EMBARQUES)
         return _para_resposta(resultado, consulta)
+
+    @aplicacao.get("/api/paineis/spec", response_model=DashboardSpec)
+    def spec_do_painel() -> DashboardSpec:
+        return spec_painel_otif()
+
+    @aplicacao.post("/api/paineis/resultado", response_model=DashboardResult)
+    async def resultado_do_painel(requisicao: Request) -> DashboardResult:
+        token = _token_do_cabecalho(requisicao.headers.get("authorization"))
+        try:
+            corpo = await requisicao.json()
+        except JSONDecodeError as exc:
+            raise ConsultaInvalida("A consulta precisa ser um registro.") from exc
+        return resolver_spec(motor, token, corpo, EMBARQUES)
 
     @aplicacao.exception_handler(ErroLogidash)
     async def erro_de_dominio(_requisicao: Request, exc: ErroLogidash) -> JSONResponse:

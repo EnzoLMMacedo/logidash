@@ -7,6 +7,10 @@ tags: [logidash, pendencias, documentacao]
 relacionados:
   - "[[README]]"
   - "[[kpis]]"
+  - "[[checklist]]"
+  - "[[operacao]]"
+  - "[[ADR-008-escopo-paineis-e-gestao-operacional]]"
+  - "[[ADR-009-operacao-como-visualizacao-e-acompanhamento-de-dados]]"
   - "[[ADR-001-ingestao-e-normalizacao]]"
   - "[[ADR-002-stack-renderizacao]]"
   - "[[ADR-003-medallion-com-quarentena]]"
@@ -58,6 +62,27 @@ Os arquivos abaixo existem como placeholders de índice. Título e status vêm d
 | [[ADR-007-otif-promessa-original]] | OTIF medido contra a promessa original | Planejado |
 
 O [[ADR-005-docs-as-code-e-sincronia-obsidian]], quando escrito, deve descrever `scripts/sync_obsidian.py`. Até lá, notas do LogiDash são gravadas só nesta pasta.
+
+
+## Uso para vendas
+
+Em 2026-11-11, Enzo registrou no time que o sistema precisa ser completo e será usado para vendas. Não há, no dicionário, um módulo de vendas nem KPI comercial além de `frete_sobre_vendas`. A finalização continua sendo o escopo do [[checklist]]. Se “uso para vendas” exigir indicador, tela ou fluxo que ainda não esteja nesta pasta, isso precisa ser escrito aqui antes da implementação.
+
+## Escopo: visualização e acompanhamento de dados
+
+O [[ADR-009-operacao-como-visualizacao-e-acompanhamento-de-dados]] (Aceito) refina o [[ADR-008-escopo-paineis-e-gestao-operacional]]: o recorte não é um gerenciador de processo operacional geral, e sim visualizar e acompanhar dados tabelados ou de banco comuns de uma transportadora.
+
+Já decidido e registrado em [[operacao]]:
+
+- o recorte, por enquanto, é só **cargas** e **emissões**
+- **emissões** são documentos fiscais, como CT-e, MDF-e e afins (os tipos nomeados são CT-e e MDF-e; “afins” ainda não foram listados)
+
+Ainda em aberto:
+
+- campos, estados, regras e telas de cargas e de emissões
+- quais documentos fiscais entram em “afins”, além de CT-e e MDF-e
+
+Nada disso entra no código enquanto não estiver escrito nesta pasta.
 
 ## Cópia no repositório
 

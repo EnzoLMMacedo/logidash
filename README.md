@@ -27,6 +27,8 @@ Abra [http://localhost:3000](http://localhost:3000). A tela mostra o OTIF do per
 
 Tokens de demonstração: `token-a` e `token-b`. O tenant sai do token. A tela não tem campo de tenant.
 
+O gerador, no servidor, expõe o spec declarativo em `GET /api/paineis/spec` e o resultado genérico em `POST /api/paineis/resultado` (mesmo token no cabeçalho `Authorization: Bearer`). O spec não carrega `tenant_id`. A página em `localhost:3000` continua a do corte visual.
+
 ## Testes
 
 ```bash
