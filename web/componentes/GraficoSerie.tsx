@@ -3,26 +3,28 @@
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
+export type FatiaGrafico = {
+  nome: string;
+  rotulo: string;
+  valor: number;
+};
+
 type Propriedades = {
-  noPrazo: number;
-  fora: number;
+  fatias: FatiaGrafico[];
   percentual: string;
 };
 
 const CORES = ["#0e4d5c", "#c47b4a"];
 
-export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
+export function GraficoSerie({ fatias, percentual }: Propriedades) {
   const caixa = useRef<HTMLDivElement>(null);
-  const resumo = `${percentual}. No prazo e completo: ${noPrazo}. Fora: ${fora}.`;
+  const assinatura = fatias.map((fatia) => `${fatia.nome}\u0000${fatia.rotulo}\u0000${fatia.valor}`).join("\n");
+  const resumo = `${percentual}. ${fatias.map((fatia) => `${fatia.rotulo}: ${fatia.valor}`).join(". ")}.`;
 
   useEffect(() => {
-    if (!caixa.current || noPrazo + fora <= 0) {
+    if (!caixa.current || fatias.length === 0) {
       return;
     }
-    const fatias = [
-      { name: "No prazo e completo", value: noPrazo },
-      { name: "Fora", value: fora },
-    ];
     const grafico = echarts.init(caixa.current);
     grafico.setOption({
       color: CORES,
@@ -58,7 +60,7 @@ export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
           avoidLabelOverlap: true,
           label: { show: false },
           itemStyle: { borderColor: "#ffffff", borderWidth: 3 },
-          data: fatias,
+          data: fatias.map((fatia) => ({ name: fatia.rotulo, value: fatia.valor })),
         },
       ],
     });
@@ -68,7 +70,7 @@ export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
       window.removeEventListener("resize", aoRedimensionar);
       grafico.dispose();
     };
-  }, [noPrazo, fora, percentual]);
+  }, [assinatura, fatias, percentual]);
 
   return <div ref={caixa} className="grafico" role="img" aria-label={resumo} />;
 }

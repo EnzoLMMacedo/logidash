@@ -191,6 +191,41 @@ h2 {
   color: var(--texto);
 }
 
+.grade-widgets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.contagens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contagens span {
+  display: block;
+  color: var(--texto);
+  font-size: 0.92rem;
+}
+
+.contagens strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bloco-quarentena {
+  margin-top: 1rem;
+}
+
 .grafico {
   width: 100%;
   height: 280px;
@@ -270,7 +305,8 @@ th {
   .topo,
   .sessao,
   .grade-kpis,
-  .grade-detalhe {
+  .grade-detalhe,
+  .grade-widgets {
     display: grid;
     grid-template-columns: 1fr;
   }
