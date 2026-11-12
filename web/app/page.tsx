@@ -78,9 +78,13 @@ function Painel({ painel }: { painel: PainelOtif }) {
         <article className="cartao" aria-labelledby="titulo-composicao">
           <p className="kicker">Composição</p>
           <h2 id="titulo-composicao">Denominador</h2>
-          <p className="apoio">Numerador e o restante do denominador.</p>
-          {painel.series.length > 0 ? (
-            <GraficoSerie series={painel.series} />
+          <p className="apoio">No prazo e completo, e o que ficou fora.</p>
+          {painel.denominador > 0 ? (
+            <GraficoSerie
+              noPrazo={painel.numerador}
+              fora={painel.denominador - painel.numerador}
+              percentual={formatarFracao(painel.valor)}
+            />
           ) : (
             <p className="vazio">Sem embarques no período para compor o gráfico.</p>
           )}

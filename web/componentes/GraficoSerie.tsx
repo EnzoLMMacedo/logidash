@@ -2,33 +2,53 @@
 
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
-import type { SeriePainel } from "@/tipos/painel";
 
 type Propriedades = {
-  series: SeriePainel[];
+  noPrazo: number;
+  fora: number;
+  percentual: string;
 };
 
 const CORES = ["#0e4d5c", "#c47b4a"];
 
-export function GraficoSerie({ series }: Propriedades) {
+export function GraficoSerie({ noPrazo, fora, percentual }: Propriedades) {
   const caixa = useRef<HTMLDivElement>(null);
-  const resumo = series.map((serie) => `${serie.nome}: ${serie.valor}`).join(". ");
+  const resumo = `${percentual}. No prazo e completo: ${noPrazo}. Fora: ${fora}.`;
 
   useEffect(() => {
-    if (!caixa.current) {
+    if (!caixa.current || noPrazo + fora <= 0) {
       return;
     }
+    const fatias = [
+      { name: "No prazo e completo", value: noPrazo },
+      { name: "Fora", value: fora },
+    ];
     const grafico = echarts.init(caixa.current);
     grafico.setOption({
       color: CORES,
       aria: { enabled: true },
-      tooltip: { trigger: "item" },
+      tooltip: {
+        trigger: "item",
+        formatter: "{b}: {c}",
+      },
       legend: {
         bottom: 0,
         icon: "circle",
         itemWidth: 10,
         itemHeight: 10,
         textStyle: { color: "#14232c", fontSize: 13 },
+      },
+      graphic: {
+        type: "text",
+        left: "center",
+        top: "36%",
+        style: {
+          text: percentual,
+          align: "center",
+          fill: "#14232c",
+          fontSize: 28,
+          fontWeight: 700,
+        },
       },
       series: [
         {
@@ -38,7 +58,7 @@ export function GraficoSerie({ series }: Propriedades) {
           avoidLabelOverlap: true,
           label: { show: false },
           itemStyle: { borderColor: "#ffffff", borderWidth: 3 },
-          data: series.map((serie) => ({ name: serie.nome, value: serie.valor })),
+          data: fatias,
         },
       ],
     });
@@ -48,7 +68,7 @@ export function GraficoSerie({ series }: Propriedades) {
       window.removeEventListener("resize", aoRedimensionar);
       grafico.dispose();
     };
-  }, [series]);
+  }, [noPrazo, fora, percentual]);
 
   return <div ref={caixa} className="grafico" role="img" aria-label={resumo} />;
 }
