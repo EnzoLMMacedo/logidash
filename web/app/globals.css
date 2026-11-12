@@ -1,13 +1,13 @@
 :root {
-  --cor-fundo: #fafafa;
-  --cor-superficie: #ffffff;
-  --cor-borda: #ebebeb;
-  --cor-borda-forte: #888888;
-  --cor-texto: #171717;
-  --cor-texto-apoio: #4d4d4d;
-  --cor-texto-discreto: #737373;
-  --cor-destaque: #0070f3;
-  --cor-critico: #ee0000;
+  --cor-fundo: #0a0a0a;
+  --cor-superficie: #141414;
+  --cor-borda: #262626;
+  --cor-borda-forte: #737373;
+  --cor-texto: #fafafa;
+  --cor-texto-apoio: #a3a3a3;
+  --cor-texto-discreto: #8f8f8f;
+  --cor-destaque: #facc15;
+  --cor-critico: #ff5c5c;
   --fonte-32: 2rem;
   --fonte-24: 1.5rem;
   --fonte-16: 1rem;
@@ -132,7 +132,7 @@ button {
   font: inherit;
   font-weight: 600;
   background: var(--cor-destaque);
-  color: var(--cor-superficie);
+  color: var(--cor-fundo);
   border: 0;
   border-radius: var(--raio-campo);
   padding: var(--espaco-2) var(--espaco-4);
@@ -172,7 +172,7 @@ h2 {
 
 .valor-dentro,
 .status-dentro {
-  color: var(--cor-destaque);
+  color: var(--cor-texto);
 }
 
 .valor-fora,
@@ -257,7 +257,7 @@ h2 {
 .vazio {
   margin: var(--espaco-4) 0 0;
   padding: var(--espaco-4);
-  border: 1px dashed var(--cor-borda-forte);
+  border: 1px dashed var(--cor-borda);
   border-radius: var(--raio-cartao);
   color: var(--cor-texto-apoio);
   background: var(--cor-fundo);
