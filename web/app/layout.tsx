@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { DM_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const fonte = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const fonte = localFont({
+  src: "../fonts/dm-sans/DMSans-latin.woff2",
+  weight: "400 700",
+  style: "normal",
 });
 
 export const metadata: Metadata = {
