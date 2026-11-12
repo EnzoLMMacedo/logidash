@@ -12,25 +12,26 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
     rotulo: rotuloVisivel(serie.rotulo),
     valor: serie.valor,
     numero: numeroDaSerie(serie.valor),
+    texto: serie.valor === null ? "Sem valor" : formatarMedida(serie.valor, widget.formatacao),
   }));
-  const assinatura = linhas
-    .map((linha) => `${linha.nome}\u0000${linha.rotulo}\u0000${linha.valor ?? ""}`)
-    .join("\n");
+  const dados = useRef({ linhas, formatacao: widget.formatacao });
+  dados.current = { linhas, formatacao: widget.formatacao };
+  const assinatura = `${widget.formatacao}\n${linhas
+    .map((linha) => `${linha.nome}\u0000${linha.rotulo}\u0000${linha.valor ?? ""}\u0000${linha.texto}`)
+    .join("\n")}`;
   const resumo =
     linhas.length === 0
       ? "Nenhuma série neste período."
-      : linhas
-          .map((linha) => `${linha.rotulo}: ${linha.valor === null ? "Sem valor" : formatarMedida(linha.valor, widget.formatacao)}`)
-          .join(". ");
+      : linhas.map((linha) => `${linha.rotulo}: ${linha.texto}`).join(". ");
 
   useEffect(() => {
-    if (!caixa.current || linhas.length === 0) {
+    const atuais = dados.current.linhas;
+    const formatacao = dados.current.formatacao;
+    if (!caixa.current || atuais.length === 0) {
       return;
     }
-    const textos = linhas.map((linha) =>
-      linha.valor === null ? "Sem valor" : formatarMedida(linha.valor, widget.formatacao),
-    );
-    const maior = linhas.reduce((atual, linha) => Math.max(atual, linha.numero ?? 0), 0);
+    const textos = atuais.map((linha) => linha.texto);
+    const maior = atuais.reduce((atual, linha) => Math.max(atual, linha.numero ?? 0), 0);
     const grafico = echarts.init(caixa.current);
     grafico.setOption({
       color: ["#0e4d5c"],
@@ -43,29 +44,29 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
           const lista = Array.isArray(params) ? params : [params];
           const item = lista[0] as { dataIndex?: number } | undefined;
           const indice = item?.dataIndex ?? 0;
-          return `${linhas[indice]?.rotulo ?? ""}: ${textos[indice] ?? ""}`;
+          return `${atuais[indice]?.rotulo ?? ""}: ${textos[indice] ?? ""}`;
         },
       },
       xAxis: {
         type: "value",
         min: 0,
-        max: widget.formatacao === "fracao" ? Math.max(1, maior) : undefined,
+        max: formatacao === "fracao" ? Math.max(1, maior) : undefined,
         axisLabel: {
           color: "#3d4d57",
           formatter: (valor: number) =>
-            widget.formatacao === "fracao" ? formatarMedida(String(valor), widget.formatacao) : String(valor),
+            formatacao === "fracao" ? formatarMedida(String(valor), formatacao) : String(valor),
         },
       },
       yAxis: {
         type: "category",
         inverse: true,
-        data: linhas.map((linha) => linha.rotulo),
+        data: atuais.map((linha) => linha.rotulo),
         axisLabel: { color: "#14232c", width: 140, overflow: "truncate" },
       },
       series: [
         {
           type: "bar",
-          data: linhas.map((linha) => linha.numero),
+          data: atuais.map((linha) => linha.numero),
           barMaxWidth: 22,
           label: {
             show: true,
@@ -82,7 +83,7 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
       window.removeEventListener("resize", aoRedimensionar);
       grafico.dispose();
     };
-  }, [assinatura, linhas, widget.formatacao]);
+  }, [assinatura]);
 
   return (
     <article className="cartao">
