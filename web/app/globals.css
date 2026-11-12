@@ -2,6 +2,7 @@
   --cor-fundo: #0a0a0a;
   --cor-superficie: #141414;
   --cor-borda: #262626;
+  --cor-borda-forte: #737373;
   --cor-texto: #fafafa;
   --cor-texto-apoio: #a3a3a3;
   --cor-texto-discreto: #8f8f8f;
@@ -115,7 +116,7 @@ input {
   font: inherit;
   color: var(--cor-texto);
   padding: var(--espaco-2) var(--espaco-3);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda-forte);
   border-radius: var(--raio-campo);
   min-width: 14rem;
   background: var(--cor-superficie);

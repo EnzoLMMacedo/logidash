@@ -44,7 +44,7 @@ export function prepararTemaGraficos(): TemaGraficos {
     categoryAxis: eixo,
     valueAxis: eixo,
     bar: {
-      itemStyle: { color: neutro },
+      itemStyle: { color: destaque },
       label: { color: apoio, fontFamily: fonte },
     },
     pie: {
