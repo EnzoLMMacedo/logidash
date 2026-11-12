@@ -90,7 +90,8 @@ Primeiro corte visual, ainda na stack do ADR-002 (Next.js, TypeScript, ECharts).
 
 - [x] Página com OTIF e quarentena visível no [PR #2](https://github.com/EnzoLMMacedo/logidash/pull/2)
 - [x] Acesso local documentado no PR: API em `:8000`, página em [http://localhost:3000](http://localhost:3000), tokens de demo `token-a` e `token-b`
-- [x] Revisão e validação sem bloqueio
+- [x] Revisão e validação sem bloqueio no commit `c2307f2`
+- [x] Revisão do commit visual `7786e37` sem bloqueio
 - [ ] Merge do PR #2 em `main`, quando o time decidir
 - [ ] Endereço público de acesso (ainda não existe; o acesso atual é local)
 
