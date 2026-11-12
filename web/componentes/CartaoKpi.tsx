@@ -2,20 +2,33 @@ import { GraficoSerie } from "@/componentes/GraficoSerie";
 import { formatarMedida, numeroDaSerie, rotuloVisivel, somarContagens } from "@/formatacao";
 import type { WidgetDashboard } from "@/tipos/painel";
 
+type SituacaoMeta = "dentro" | "fora" | "neutro";
+
+function situacaoDaMeta(valor: string | null | undefined, meta: string | null): SituacaoMeta {
+  const numero = numeroDaSerie(valor ?? null);
+  const alvo = numeroDaSerie(meta);
+  if (numero === null || alvo === null) {
+    return "neutro";
+  }
+  // O widget não traz direção. Premissa visual: maior é melhor (valor >= meta).
+  return numero >= alvo ? "dentro" : "fora";
+}
+
 export function CartaoKpi({ widget }: { widget: WidgetDashboard }) {
   const serieValor = widget.series.find((serie) => serie.nome === "valor");
   const fatias = widget.series.filter((serie) => serie.nome !== "valor");
   const vazio = somarContagens(fatias.map((fatia) => fatia.valor)) === 0;
   const percentual = formatarMedida(serieValor?.valor ?? null, widget.formatacao);
+  const situacao = situacaoDaMeta(serieValor?.valor, widget.meta);
+  const textoSituacao =
+    situacao === "dentro" ? "Dentro da meta" : situacao === "fora" ? "Abaixo da meta" : null;
 
   return (
-    <article className="cartao cartao-principal">
+    <article className="cartao">
       <p className="kicker">Indicador</p>
       <h2>{widget.rotulo}</h2>
-      <p className="valor">{percentual}</p>
-      {serieValor?.valor != null && widget.formatacao === "fracao" ? (
-        <p className="apoio">Fração {serieValor.valor.replace(".", ",")}</p>
-      ) : null}
+      <p className={situacao === "neutro" ? "valor" : `valor valor-${situacao}`}>{percentual}</p>
+      {textoSituacao ? <p className={`status-meta status-${situacao}`}>{textoSituacao}</p> : null}
       {widget.meta ? <p className="apoio">Meta {formatarMedida(widget.meta, widget.formatacao)}</p> : null}
       {vazio ? (
         <p className="vazio">Sem embarques no período para compor o gráfico.</p>

@@ -170,12 +170,20 @@ h2 {
   font-variant-numeric: tabular-nums;
 }
 
-.numero {
-  margin: var(--espaco-3) 0 var(--espaco-1);
-  font-size: var(--fonte-24);
+.valor-dentro,
+.status-dentro {
+  color: var(--cor-destaque);
+}
+
+.valor-fora,
+.status-fora {
+  color: var(--cor-critico);
+}
+
+.status-meta {
+  margin: var(--espaco-1) 0 0;
+  font-size: var(--fonte-14);
   font-weight: 600;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
 }
 
 .apoio {

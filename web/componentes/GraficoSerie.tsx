@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
+import { corDaFatia, NOME_TEMA_GRAFICOS, prepararTemaGraficos } from "@/componentes/temaGraficos";
 
 export type FatiaGrafico = {
   nome: string;
@@ -13,8 +14,6 @@ type Propriedades = {
   fatias: FatiaGrafico[];
   percentual: string;
 };
-
-const CORES = ["#0e4d5c", "#c47b4a"];
 
 export function GraficoSerie({ fatias, percentual }: Propriedades) {
   const caixa = useRef<HTMLDivElement>(null);
@@ -29,9 +28,9 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
     if (!caixa.current || atuais.length === 0) {
       return;
     }
-    const grafico = echarts.init(caixa.current);
+    const tema = prepararTemaGraficos();
+    const grafico = echarts.init(caixa.current, NOME_TEMA_GRAFICOS);
     grafico.setOption({
-      color: CORES,
       aria: { enabled: true },
       tooltip: {
         trigger: "item",
@@ -42,7 +41,7 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
         icon: "circle",
         itemWidth: 10,
         itemHeight: 10,
-        textStyle: { color: "#14232c", fontSize: 13 },
+        textStyle: { fontSize: 13 },
       },
       graphic: {
         type: "text",
@@ -51,7 +50,8 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
         style: {
           text: texto,
           align: "center",
-          fill: "#14232c",
+          fill: tema.texto,
+          fontFamily: tema.fonte,
           fontSize: 28,
           fontWeight: 700,
         },
@@ -63,8 +63,11 @@ export function GraficoSerie({ fatias, percentual }: Propriedades) {
           center: ["50%", "44%"],
           avoidLabelOverlap: true,
           label: { show: false },
-          itemStyle: { borderColor: "#ffffff", borderWidth: 3 },
-          data: atuais.map((fatia) => ({ name: fatia.rotulo, value: fatia.valor })),
+          data: atuais.map((fatia) => ({
+            name: fatia.rotulo,
+            value: fatia.valor,
+            itemStyle: { color: corDaFatia(fatia.nome, tema) },
+          })),
         },
       ],
     });
