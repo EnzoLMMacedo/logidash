@@ -25,7 +25,7 @@ export function prepararTemaGraficos(): TemaGraficos {
   const eixo = {
     axisLine: { lineStyle: { color: borda } },
     axisTick: { lineStyle: { color: borda } },
-    axisLabel: { color: apoio, fontFamily: fonte },
+    axisLabel: { color: neutro, fontFamily: fonte },
     splitLine: { lineStyle: { color: borda } },
   };
 
@@ -44,7 +44,7 @@ export function prepararTemaGraficos(): TemaGraficos {
     categoryAxis: eixo,
     valueAxis: eixo,
     bar: {
-      itemStyle: { color: destaque },
+      itemStyle: { color: neutro },
       label: { color: apoio, fontFamily: fonte },
     },
     pie: {
