@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
+import { NOME_TEMA_GRAFICOS, prepararTemaGraficos } from "@/componentes/temaGraficos";
 import { formatarMedida, numeroDaSerie, rotuloVisivel } from "@/formatacao";
 import type { WidgetDashboard } from "@/tipos/painel";
 
@@ -32,9 +33,9 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
     }
     const textos = atuais.map((linha) => linha.texto);
     const maior = atuais.reduce((atual, linha) => Math.max(atual, linha.numero ?? 0), 0);
-    const grafico = echarts.init(caixa.current);
+    const tema = prepararTemaGraficos();
+    const grafico = echarts.init(caixa.current, NOME_TEMA_GRAFICOS);
     grafico.setOption({
-      color: ["#0e4d5c"],
       aria: { enabled: true },
       grid: { left: 8, right: 64, top: 8, bottom: 8, containLabel: true },
       tooltip: {
@@ -51,8 +52,12 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
         type: "value",
         min: 0,
         max: formatacao === "fracao" ? Math.max(1, maior) : undefined,
+        axisLine: { lineStyle: { color: tema.borda } },
+        axisTick: { lineStyle: { color: tema.borda } },
+        splitLine: { lineStyle: { color: tema.borda } },
         axisLabel: {
-          color: "#3d4d57",
+          color: tema.apoio,
+          fontFamily: tema.fonte,
           formatter: (valor: number) =>
             formatacao === "fracao" ? formatarMedida(String(valor), formatacao) : String(valor),
         },
@@ -61,17 +66,21 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
         type: "category",
         inverse: true,
         data: atuais.map((linha) => linha.rotulo),
-        axisLabel: { color: "#14232c", width: 140, overflow: "truncate" },
+        axisLine: { lineStyle: { color: tema.borda } },
+        axisTick: { lineStyle: { color: tema.borda } },
+        axisLabel: { color: tema.apoio, fontFamily: tema.fonte, width: 140, overflow: "truncate" },
       },
       series: [
         {
           type: "bar",
           data: atuais.map((linha) => linha.numero),
           barMaxWidth: 22,
+          itemStyle: { color: tema.destaque },
           label: {
             show: true,
             position: "right",
-            color: "#14232c",
+            color: tema.apoio,
+            fontFamily: tema.fonte,
             formatter: (params: { dataIndex?: number }) => textos[params.dataIndex ?? 0] ?? "",
           },
         },
