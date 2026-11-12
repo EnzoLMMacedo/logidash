@@ -53,7 +53,10 @@ export default async function Pagina({ searchParams }: Propriedades) {
       {consulta.ok ? (
         <Painel spec={consulta.spec} resultado={consulta.resultado} />
       ) : (
-        <p className="erro">{consulta.mensagem}</p>
+        <div className="erro" role="alert">
+          <p className="erro-titulo">Falha ao consultar</p>
+          <p className="apoio">{consulta.mensagem}</p>
+        </div>
       )}
     </main>
   );
@@ -62,20 +65,25 @@ export default async function Pagina({ searchParams }: Propriedades) {
 function Painel({ spec, resultado }: { spec: DashboardSpec; resultado: DashboardResult }) {
   return (
     <>
-      <section className="grade-widgets" aria-label="Indicadores">
-        {spec.layout.map((item, indice) => {
-          const widget = resultado.widgets[indice];
-          const Componente = WidgetRegistry[item.tipo];
-          if (!widget || widget.tipo !== item.tipo || !Componente) {
-            return (
-              <article className="cartao" key={`${item.tipo}-${indice}`}>
-                <p className="vazio">Este widget ainda não está disponível.</p>
-              </article>
-            );
-          }
-          return <Componente key={`${item.tipo}-${indice}`} widget={widget} />;
-        })}
-      </section>
+      {spec.layout.length === 0 ? (
+        <p className="vazio">Nenhum indicador no período.</p>
+      ) : (
+        <section className="grade-widgets" aria-label="Indicadores">
+          {spec.layout.map((item, indice) => {
+            const widget = resultado.widgets[indice];
+            const Componente = WidgetRegistry[item.tipo];
+            if (!widget || widget.tipo !== item.tipo || !Componente) {
+              return (
+                <article className="cartao" key={`${item.tipo}-${indice}`}>
+                  <h2 className="erro-titulo">Widget indisponível</h2>
+                  <p className="apoio">Não foi possível exibir este cartão.</p>
+                </article>
+              );
+            }
+            return <Componente key={`${item.tipo}-${indice}`} widget={widget} />;
+          })}
+        </section>
+      )}
       <Quarentena rejeicoes={resultado.rejeicoes} />
     </>
   );
@@ -95,7 +103,7 @@ function Quarentena({ rejeicoes }: { rejeicoes: RejeicaoDashboard[] }) {
         </div>
         <p className="apoio">Linhas que não entram na métrica.</p>
         {linhas === 0 ? (
-          <p className="vazio">Nenhuma linha ficou de fora da métrica.</p>
+          <p className="vazio">Nenhuma linha fora da métrica.</p>
         ) : (
           <table>
             <caption>Embarques rejeitados pelo contrato</caption>

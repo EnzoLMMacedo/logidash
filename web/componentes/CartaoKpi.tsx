@@ -31,7 +31,7 @@ export function CartaoKpi({ widget }: { widget: WidgetDashboard }) {
       {textoSituacao ? <p className={`status-meta status-${situacao}`}>{textoSituacao}</p> : null}
       {widget.meta ? <p className="apoio">Meta {formatarMedida(widget.meta, widget.formatacao)}</p> : null}
       {vazio ? (
-        <p className="vazio">Sem embarques no período para compor o gráfico.</p>
+        <p className="vazio">Sem embarques no período.</p>
       ) : (
         <>
           <ul className="contagens">
