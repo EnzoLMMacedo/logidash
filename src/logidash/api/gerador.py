@@ -253,13 +253,13 @@ def _widget_card(resultado: ResultadoKpi) -> WidgetDashboard:
         series=[
             SerieDashboard(nome="valor", rotulo="Valor", valor=_texto(resultado.valor), unidade=unidade),
             SerieDashboard(
-                nome="No prazo e completo",
+                nome="no_prazo_completo",
                 rotulo="No prazo e completo",
                 valor=str(resultado.numerador),
                 unidade="embarque",
             ),
             SerieDashboard(
-                nome="Fora",
+                nome="fora",
                 rotulo="Fora",
                 valor=str(resultado.denominador - resultado.numerador),
                 unidade="embarque",

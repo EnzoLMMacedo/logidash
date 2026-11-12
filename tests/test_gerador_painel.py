@@ -52,8 +52,10 @@ def test_resultado_otif_e_quarentena() -> None:
     assert card["formatacao"] == "fracao"
     assert card["meta"] == "0.95"
     assert _serie(card, "valor")["valor"] == "0.5"
-    assert _serie(card, "No prazo e completo")["valor"] == "1"
-    assert _serie(card, "Fora")["valor"] == "1"
+    assert _serie(card, "no_prazo_completo")["rotulo"] == "No prazo e completo"
+    assert _serie(card, "no_prazo_completo")["valor"] == "1"
+    assert _serie(card, "fora")["rotulo"] == "Fora"
+    assert _serie(card, "fora")["valor"] == "1"
     ids = {item["shipment_id"] for item in corpo["rejeicoes"]}
     assert "E-peso" in ids
     assert "E-b" not in ids
@@ -64,8 +66,8 @@ def test_outro_token_nao_ve_o_mesmo_resultado() -> None:
     corpo = _resultado("token-b").json()
     card = _card(corpo)
     assert _serie(card, "valor")["valor"] == "1"
-    assert _serie(card, "No prazo e completo")["valor"] == "1"
-    assert _serie(card, "Fora")["valor"] == "0"
+    assert _serie(card, "no_prazo_completo")["valor"] == "1"
+    assert _serie(card, "fora")["valor"] == "0"
     assert corpo["rejeicoes"] == []
 
 
