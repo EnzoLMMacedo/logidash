@@ -2,6 +2,7 @@
 
 from collections.abc import Mapping, Sequence
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 
 import yaml
@@ -252,15 +253,15 @@ def _widget_card(resultado: ResultadoKpi) -> WidgetDashboard:
         series=[
             SerieDashboard(nome="valor", rotulo="Valor", valor=_texto(resultado.valor), unidade=unidade),
             SerieDashboard(
-                nome="numerador",
-                rotulo="Numerador",
+                nome="No prazo e completo",
+                rotulo="No prazo e completo",
                 valor=str(resultado.numerador),
                 unidade="embarque",
             ),
             SerieDashboard(
-                nome="denominador",
-                rotulo="Denominador",
-                valor=str(resultado.denominador),
+                nome="Fora",
+                rotulo="Fora",
+                valor=str(resultado.denominador - resultado.numerador),
                 unidade="embarque",
             ),
         ],
@@ -269,9 +270,7 @@ def _widget_card(resultado: ResultadoKpi) -> WidgetDashboard:
 
 def _widget_barra(resultado: ResultadoKpi, item: Mapping[str, object]) -> WidgetDashboard:
     rotulo, unidade, meta = _metadados(resultado.kpi)
-    grupos = list(resultado.grupos)
-    if item.get("ordenar") == "desc":
-        grupos.reverse()
+    grupos = _ordenar_por_valor(list(resultado.grupos), str(item.get("ordenar") or "asc"))
     limite = item.get("limite")
     if type(limite) is int and not isinstance(limite, bool):
         grupos = grupos[:limite]
@@ -306,6 +305,19 @@ def _metadados(kpi_id: str) -> tuple[str, str, str | None]:
         unidade if isinstance(unidade, str) and unidade else "fracao",
         meta if isinstance(meta, str) and meta else None,
     )
+
+
+def _ordenar_por_valor(grupos: list, ordenar: str) -> list:
+    def chave(grupo: object) -> tuple[int, Decimal]:
+        valor = getattr(grupo, "valor")
+        if valor is None:
+            return (1, Decimal(0))
+        numero = Decimal(valor)
+        if ordenar == "desc":
+            numero = -numero
+        return (0, numero)
+
+    return sorted(grupos, key=chave)
 
 
 def _texto(valor: object) -> str | None:
