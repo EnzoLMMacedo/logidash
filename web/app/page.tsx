@@ -23,42 +23,50 @@ export default async function Pagina({ searchParams }: Propriedades) {
   const intervalo = consulta.ok ? periodoDoSpec(consulta.spec) : null;
 
   return (
-    <main>
-      <header className="topo">
-        <div>
-          <p className="marca">LogiDash</p>
-          <h1>{titulo}</h1>
-        </div>
-        {intervalo ? (
-          <p className="periodo">
-            {formatarData(intervalo.inicio)} a {formatarData(intervalo.fim)}
-          </p>
-        ) : null}
-      </header>
-      <section className="sessao" aria-label="Acesso">
-        <div>
-          <p className="kicker">Acesso</p>
-          <p>O tenant vem do token, não de um campo da tela.</p>
-        </div>
-        <form method="get">
+    <>
+      <header className="faixa">
+        <div className="topo">
           <div>
-            <label className="rotulo-campo" htmlFor="token">
-              Token
-            </label>
-            <input id="token" name="token" defaultValue={token} autoComplete="off" />
+            <p className="marca">LogiDash</p>
+            <h1>{titulo}</h1>
           </div>
-          <button type="submit">Atualizar</button>
-        </form>
-      </section>
-      {consulta.ok ? (
-        <Painel spec={consulta.spec} resultado={consulta.resultado} />
-      ) : (
-        <div className="erro" role="alert">
-          <p className="erro-titulo">Falha ao consultar</p>
-          <p className="apoio">{consulta.mensagem}</p>
+          <div className="topo-acoes">
+            {intervalo ? (
+              <p className="periodo">
+                {formatarData(intervalo.inicio)} a {formatarData(intervalo.fim)}
+              </p>
+            ) : null}
+            <button type="submit" form="acesso">
+              Atualizar
+            </button>
+          </div>
         </div>
-      )}
-    </main>
+      </header>
+      <main>
+        <section className="sessao" aria-label="Acesso">
+          <div>
+            <p className="kicker">Acesso</p>
+            <p>O tenant vem do token, não de um campo da tela.</p>
+          </div>
+          <form id="acesso" method="get">
+            <div>
+              <label className="rotulo-campo" htmlFor="token">
+                Token
+              </label>
+              <input id="token" name="token" defaultValue={token} autoComplete="off" />
+            </div>
+          </form>
+        </section>
+        {consulta.ok ? (
+          <Painel spec={consulta.spec} resultado={consulta.resultado} />
+        ) : (
+          <div className="erro" role="alert">
+            <p className="erro-titulo">Falha ao consultar</p>
+            <p className="apoio">{consulta.mensagem}</p>
+          </div>
+        )}
+      </main>
+    </>
   );
 }
 
@@ -66,7 +74,7 @@ function Painel({ spec, resultado }: { spec: DashboardSpec; resultado: Dashboard
   return (
     <>
       {spec.layout.length === 0 ? (
-        <p className="vazio">Nenhum indicador no período.</p>
+        <p className="vazio">Nenhum indicador configurado neste painel</p>
       ) : (
         <section className="grade-widgets" aria-label="Indicadores">
           {spec.layout.map((item, indice) => {

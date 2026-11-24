@@ -41,12 +41,29 @@ main {
   padding: var(--espaco-8) var(--espaco-6) var(--espaco-12);
 }
 
+.faixa {
+  background: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
 .topo {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--espaco-6);
-  margin-bottom: var(--espaco-6);
+  align-items: center;
+  gap: var(--espaco-4);
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: var(--espaco-4) var(--espaco-6);
+  min-width: 0;
+}
+
+.topo-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--espaco-3);
+  min-width: 0;
 }
 
 .marca {
@@ -67,10 +84,11 @@ h1 {
 
 .periodo {
   margin: 0;
+  max-width: 100%;
   padding: var(--espaco-2) var(--espaco-3);
   border: 1px solid var(--cor-borda);
   border-radius: 999px;
-  background: var(--cor-superficie);
+  background: var(--cor-fundo);
   color: var(--cor-texto-apoio);
   font-size: var(--fonte-14);
   font-variant-numeric: tabular-nums;
@@ -143,7 +161,7 @@ button {
   background: var(--cor-superficie);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-cartao);
-  padding: var(--espaco-6) var(--espaco-4);
+  padding: var(--espaco-4);
 }
 
 .kicker {
@@ -162,10 +180,19 @@ h2 {
   letter-spacing: -0.02em;
 }
 
+.rotulo {
+  margin: 0;
+  color: var(--cor-destaque);
+  font-size: var(--fonte-12);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .valor {
   margin: var(--espaco-2) 0 var(--espaco-1);
   font-size: var(--fonte-32);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -359,8 +386,8 @@ p.erro-titulo {
     min-width: 0;
   }
 
-  form button {
-    justify-self: start;
+  .topo-acoes {
+    justify-content: flex-start;
   }
 
   .rejeicoes {

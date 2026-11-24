@@ -86,8 +86,7 @@ export function BarraHorizontal({ widget }: { widget: WidgetDashboard }) {
 
   return (
     <article className="cartao">
-      <p className="kicker">Série</p>
-      <h2>{widget.rotulo}</h2>
+      <h2 className="rotulo">{widget.rotulo}</h2>
       {linhas.length === 0 ? (
         <p className="vazio">Sem séries no período.</p>
       ) : (
